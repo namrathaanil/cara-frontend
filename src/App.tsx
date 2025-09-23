@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { theme } from './styles/theme';
-import Home from './components/home/home';
+import Home from './components/home/Home';
 
 function App() {
   return (
