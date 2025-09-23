@@ -1,24 +1,17 @@
 import React, { useState } from 'react';
-// NewConsultation component for creating new compliance consultations
 import {
-  Box,
   Typography,
-  Button,
-  Paper,
   Stepper,
   Step,
   StepLabel,
-  TextField,
-  Grid,
-  Card,
-  CardContent,
-  CardActionArea,
   Chip,
   IconButton,
   List,
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
+  CardContent,
+  CardActionArea,
 } from '@mui/material';
 import {
   CloudUpload as UploadIcon,
@@ -36,6 +29,18 @@ import {
   Image,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import {
+  PageContainer,
+  Card,
+  PrimaryButton,
+  SearchField,
+  GridBox,
+  FlexBox,
+  StepContent,
+  FileListItem,
+  Section,
+} from '../ui';
+import { Paper, Button, Box, TextField } from '@mui/material';
 
 interface ConsultationData {
   topic: string;
@@ -66,7 +71,6 @@ const NewConsultation: React.FC = () => {
 
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
-      // In a real app, this would submit the consultation
       alert('Consultation submitted! (This would normally start the chat session)');
       navigate('/');
     } else {
@@ -107,7 +111,7 @@ const NewConsultation: React.FC = () => {
               What product, process, or regulation are you seeking advice on?
             </Typography>
             
-            <TextField
+            <SearchField
               fullWidth
               variant="outlined"
               placeholder="Search (e.g., GDPR, Cloud Hosting, Data Privacy)"
@@ -123,31 +127,24 @@ const NewConsultation: React.FC = () => {
               Popular choices
             </Typography>
             
-            <Grid container spacing={2}>
+            <GridBox columns={3} gap={2}>
               {popularChoices.map((choice) => (
-                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={choice.value}>
-                  <Card
-                    sx={{
-                      cursor: 'pointer',
-                      border: consultationData.topic === choice.label ? 2 : 1,
-                      borderColor: consultationData.topic === choice.label ? 'primary.main' : 'grey.300',
-                      transition: 'all 0.2s',
-                      '&:hover': {
-                        borderColor: 'primary.main',
-                        transform: 'translateY(-2px)',
-                      },
-                    }}
-                  >
-                    <CardActionArea onClick={() => handleTopicSelect(choice.value, choice.label)}>
-                      <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Card
+                  key={choice.value}
+                  selected={consultationData.topic === choice.label}
+                  clickable
+                >
+                  <CardActionArea onClick={() => handleTopicSelect(choice.value, choice.label)}>
+                    <CardContent>
+                      <FlexBox align="center" gap={2}>
                         <Box sx={{ color: 'primary.main' }}>{choice.icon}</Box>
                         <Typography>{choice.label}</Typography>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                </Grid>
+                      </FlexBox>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
               ))}
-            </Grid>
+            </GridBox>
 
             {consultationData.topic && (
               <Box sx={{ mt: 3 }}>
@@ -212,18 +209,20 @@ const NewConsultation: React.FC = () => {
               {consultationData.attachedFiles.length > 0 && (
                 <List>
                   {consultationData.attachedFiles.map((file, index) => (
-                    <ListItem key={index} sx={{ bgcolor: 'grey.50', mb: 1, borderRadius: 1 }}>
-                      {file.type.startsWith('image/') ? <Image sx={{ mr: 2 }} /> : <InsertDriveFile sx={{ mr: 2 }} />}
-                      <ListItemText
-                        primary={file.name}
-                        secondary={`${(file.size / 1024 / 1024).toFixed(2)} MB`}
-                      />
-                      <ListItemSecondaryAction>
-                        <IconButton edge="end" onClick={() => removeFile(index)}>
-                          <Delete />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
+                    <FileListItem key={index}>
+                      <FlexBox align="center" style={{ flex: 1 }}>
+                        {file.type.startsWith('image/') ? <Image /> : <InsertDriveFile />}
+                        <Box sx={{ ml: 2 }}>
+                          <Typography>{file.name}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {(file.size / 1024 / 1024).toFixed(2)} MB
+                          </Typography>
+                        </Box>
+                      </FlexBox>
+                      <IconButton onClick={() => removeFile(index)}>
+                        <Delete />
+                      </IconButton>
+                    </FileListItem>
                   ))}
                 </List>
               )}
@@ -242,46 +241,52 @@ const NewConsultation: React.FC = () => {
               Please review the information below before starting the consultation.
             </Typography>
 
-            <Paper sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Product/Process/Regulation
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
-                <Chip label="Product:" />
-                <Typography>{consultationData.topic || 'Not selected'}</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Chip label="Regulation:" />
-                <Typography>GDPR</Typography>
-              </Box>
-            </Paper>
+            <Section>
+              <Paper sx={{ p: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                  Product/Process/Regulation
+                </Typography>
+                <FlexBox align="center" gap={1} style={{ marginBottom: 16 }}>
+                  <Chip label="Product:" />
+                  <Typography>{consultationData.topic || 'Not selected'}</Typography>
+                </FlexBox>
+                <FlexBox align="center" gap={1}>
+                  <Chip label="Regulation:" />
+                  <Typography>GDPR</Typography>
+                </FlexBox>
+              </Paper>
+            </Section>
 
-            <Paper sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Description
-              </Typography>
-              <Typography sx={{ whiteSpace: 'pre-wrap' }}>
-                {consultationData.description || 'No description provided'}
-              </Typography>
-            </Paper>
+            <Section>
+              <Paper sx={{ p: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                  Description
+                </Typography>
+                <Typography sx={{ whiteSpace: 'pre-wrap' }}>
+                  {consultationData.description || 'No description provided'}
+                </Typography>
+              </Paper>
+            </Section>
 
             {consultationData.attachedFiles.length > 0 && (
-              <Paper sx={{ p: 3, mb: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Documents
-                </Typography>
-                <List>
-                  {consultationData.attachedFiles.map((file, index) => (
-                    <ListItem key={index}>
-                      {file.type.startsWith('image/') ? <Image sx={{ mr: 2 }} /> : <InsertDriveFile sx={{ mr: 2 }} />}
-                      <ListItemText primary={file.name} />
-                      <Button size="small" color="primary">
-                        View
-                      </Button>
-                    </ListItem>
-                  ))}
-                </List>
-              </Paper>
+              <Section>
+                <Paper sx={{ p: 3 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Documents
+                  </Typography>
+                  <List>
+                    {consultationData.attachedFiles.map((file, index) => (
+                      <ListItem key={index}>
+                        {file.type.startsWith('image/') ? <Image sx={{ mr: 2 }} /> : <InsertDriveFile sx={{ mr: 2 }} />}
+                        <ListItemText primary={file.name} />
+                        <Button size="small" color="primary">
+                          View
+                        </Button>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Paper>
+              </Section>
             )}
 
             {consultationData.attachedFiles.some(file => file.type.startsWith('image/')) && (
@@ -289,27 +294,26 @@ const NewConsultation: React.FC = () => {
                 <Typography variant="h6" gutterBottom>
                   Images
                 </Typography>
-                <Grid container spacing={2}>
+                <GridBox columns={4} gap={2}>
                   {consultationData.attachedFiles
                     .filter(file => file.type.startsWith('image/'))
                     .map((file, index) => (
-                      <Grid size={{ xs: 6, sm: 3 }} key={index}>
-                        <Box
-                          sx={{
-                            width: '100%',
-                            height: 120,
-                            bgcolor: 'grey.200',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderRadius: 1,
-                          }}
-                        >
-                          <Image sx={{ fontSize: 40, color: 'grey.500' }} />
-                        </Box>
-                      </Grid>
+                      <Box
+                        key={index}
+                        sx={{
+                          width: '100%',
+                          height: 120,
+                          bgcolor: 'grey.200',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 1,
+                        }}
+                      >
+                        <Image sx={{ fontSize: 40, color: 'grey.500' }} />
+                      </Box>
                     ))}
-                </Grid>
+                </GridBox>
               </Paper>
             )}
           </Box>
@@ -321,7 +325,7 @@ const NewConsultation: React.FC = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+    <PageContainer sx={{ maxWidth: 800 }}>
       <Paper sx={{ p: 4 }}>
         <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
           {steps.map((label) => (
@@ -331,31 +335,29 @@ const NewConsultation: React.FC = () => {
           ))}
         </Stepper>
 
-        <Box sx={{ minHeight: 400 }}>
+        <StepContent>
           {getStepContent(activeStep)}
-        </Box>
+        </StepContent>
 
-        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 4 }}>
+        <FlexBox justify="space-between" sx={{ pt: 4 }}>
           <Button
             disabled={activeStep === 0}
             onClick={handleBack}
-            sx={{ mr: 1 }}
             startIcon={<ArrowBack />}
           >
             Back
           </Button>
-          <Box sx={{ flex: '1 1 auto' }} />
-          <Button
+          <PrimaryButton
             variant="contained"
             onClick={handleNext}
             endIcon={activeStep === steps.length - 1 ? null : <ArrowForward />}
             disabled={activeStep === 0 && !consultationData.topic}
           >
             {activeStep === steps.length - 1 ? 'Confirm and Start Consultation' : 'Next'}
-          </Button>
-        </Box>
+          </PrimaryButton>
+        </FlexBox>
       </Paper>
-    </Box>
+    </PageContainer>
   );
 };
 

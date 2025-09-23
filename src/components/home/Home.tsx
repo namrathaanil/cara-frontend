@@ -1,83 +1,104 @@
 import React from 'react';
-import { Box, Typography, Button, Paper } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Add as AddIcon } from '@mui/icons-material';
+import { ArrowRight, AutoAwesome } from '@mui/icons-material';
+import { PageContainer, GradientCard, CTACard, SecondaryButton, GhostButton, Section } from '../ui';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-      {/* Hero Section */}
-      <Paper
-        sx={{
-          background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-          color: 'white',
-          p: 6,
-          mb: 4,
-          borderRadius: 3,
-          textAlign: 'center',
-        }}
-      >
-        <Typography variant="h3" component="h1" gutterBottom>
-          Welcome to ComplianceAI
-        </Typography>
-        <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
-          Get expert advice on enterprise compliance and risk management with our AI-powered chatbot
-        </Typography>
-        <Button
-          variant="contained"
-          size="large"
-          startIcon={<AddIcon />}
-          onClick={() => navigate('/consultation/new')}
-          sx={{
-            bgcolor: 'white',
-            color: 'primary.main',
-            fontSize: '1.1rem',
-            py: 1.5,
-            px: 4,
-            '&:hover': {
-              bgcolor: 'grey.100',
-            },
-          }}
-        >
-          Start New Consultation
-        </Button>
-      </Paper>
+    <PageContainer>
+      <Section>
+        <GradientCard>
+          <Box sx={{ position: 'relative', zIndex: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+              <Box
+                sx={{
+                  background: 'rgba(255,255,255,0.15)',
+                  borderRadius: '100px',
+                  padding: '8px 20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  backdropFilter: 'blur(10px)',
+                }}
+              >
+                <AutoAwesome sx={{ fontSize: 16 }} />
+                <Typography variant="body2" sx={{ fontWeight: 500, letterSpacing: '0.02em' }}>
+                  AI-Powered Compliance
+                </Typography>
+              </Box>
+            </Box>
+            
+            <Typography 
+              variant="h2" 
+              component="h1" 
+              gutterBottom
+              sx={{ 
+                fontWeight: 300,
+                mb: 2,
+                background: 'linear-gradient(to right, #ffffff 0%, #e0e0e0 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              Welcome to ComplianceAI
+            </Typography>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                mb: 5, 
+                opacity: 0.9,
+                maxWidth: 600,
+                mx: 'auto',
+                lineHeight: 1.8,
+              }}
+            >
+              Get expert advice on enterprise compliance and risk management with our intelligent AI assistant
+            </Typography>
+            <SecondaryButton
+              size="large"
+              endIcon={<ArrowRight />}
+              onClick={() => navigate('/consultation/new')}
+              sx={{
+                background: 'white',
+                color: '#1a1a1a',
+                '&:hover': {
+                  background: '#f5f5f5',
+                },
+              }}
+            >
+              Start New Consultation
+            </SecondaryButton>
+          </Box>
+        </GradientCard>
+      </Section>
 
-      {/* Call to Action Card */}
-      <Paper
-        sx={{
-          mt: 4,
-          p: 4,
-          background: '#0066CC',
-          color: 'white',
-          textAlign: 'center',
-        }}
-      >
-        <Typography variant="h5" gutterBottom>
-          Ready to start a new consultation?
+      <CTACard>
+        <Typography 
+          variant="h4" 
+          gutterBottom
+          sx={{ fontWeight: 400 }}
+        >
+          Ready to ensure compliance?
         </Typography>
-        <Typography sx={{ mb: 3 }}>
-          Our AI is here to help you navigate complex compliance and risk scenarios.
+        <Typography 
+          variant="body1"
+          sx={{ mb: 4, opacity: 0.9, maxWidth: 500, mx: 'auto' }}
+        >
+          Our AI assistant helps you navigate complex regulations and compliance requirements with confidence
         </Typography>
-        <Button
-          variant="outlined"
+        <GhostButton
           size="large"
           onClick={() => navigate('/consultation/new')}
-          sx={{
-            borderColor: 'white',
-            color: 'white',
-            '&:hover': {
-              borderColor: 'white',
-              bgcolor: 'rgba(255,255,255,0.1)',
-            },
-          }}
+          endIcon={<ArrowRight />}
         >
-          Launch New Consultation
-        </Button>
-      </Paper>
-    </Box>
+          Launch Consultation
+        </GhostButton>
+      </CTACard>
+    </PageContainer>
   );
 };
 

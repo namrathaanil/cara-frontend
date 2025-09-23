@@ -6,20 +6,48 @@ export const Header: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <AppBar position="static" sx={{ background: '#FFFFFF', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-      <Toolbar>
-        <Box display="flex" alignItems="center" sx={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
-          <Typography
-            variant="h5"
-            component="div"
-            sx={{ 
-              color: '#0066CC', 
-              fontWeight: 700,
+    <AppBar 
+      position="fixed" 
+      sx={{ 
+        background: 'rgba(255,255,255,0.95)', 
+        backdropFilter: 'blur(10px)',
+        boxShadow: '0 1px 0 rgba(0,0,0,0.1)',
+        borderBottom: '1px solid rgba(0,0,0,0.05)',
+      }}
+    >
+      <Toolbar sx={{ minHeight: 72 }}>
+        <Box 
+          display="flex" 
+          alignItems="center" 
+          sx={{ cursor: 'pointer' }} 
+          onClick={() => navigate('/')}
+        >
+          <Box
+            sx={{
+              width: 32,
+              height: 32,
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #1a1a1a 0%, #404040 100%)',
               display: 'flex',
-              alignItems: 'center'
+              alignItems: 'center',
+              justifyContent: 'center',
+              mr: 2,
+              color: 'white',
+              fontSize: '18px',
+              fontWeight: 700,
             }}
           >
-            🔷 Compliance AI
+            C
+          </Box>
+          <Typography
+            variant="h6"
+            sx={{ 
+              color: '#1a1a1a', 
+              fontWeight: 600,
+              letterSpacing: '-0.02em',
+            }}
+          >
+            ComplianceAI
           </Typography>
         </Box>
         <Box sx={{ flexGrow: 1 }} />

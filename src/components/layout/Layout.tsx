@@ -8,11 +8,13 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <Box sx={{ minHeight: '100vh', backgroundColor: '#F5F7FA' }}>
+    <Box sx={{ minHeight: '100vh', backgroundColor: '#FAFAFA' }}>
       <Header />
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        {children}
-      </Container>
+      <Box sx={{ paddingTop: '72px' }}>
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+          {children}
+        </Container>
+      </Box>
     </Box>
   );
 };
