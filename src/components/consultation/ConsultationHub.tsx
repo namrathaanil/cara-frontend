@@ -3,18 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
-  CardActionArea,
   CircularProgress,
   Alert,
-  Button,
-  Paper,
+  TextField,
+  InputAdornment,
   IconButton,
   Menu,
   MenuItem,
-  TextField,
-  InputAdornment,
 } from '@mui/material';
 import {
   Add,
@@ -31,62 +26,261 @@ import { consultationService } from '../../pocketbase/services/pocketbase';
 import { useAuth } from '../../pocketbase/services/AuthContext';
 import { Consultation } from '../../pocketbase/types/consultation.types';
 
-// Styled Components - Minimal and Modern
-const StatsCard = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(2.5),
-  borderRadius: theme.spacing(1.5),
-  border: '1px solid #E5E7EB',
-  background: 'white',
-  boxShadow: 'none',
-  transition: 'all 0.2s ease',
+// Modern Custom Components with Bold Borders
+const Container = styled(Box)({
+  width: '100%',
+});
+
+const Header = styled(Box)({
+  marginBottom: '48px',
+});
+
+const Title = styled(Typography)({
+  fontSize: '42px',
+  fontWeight: 800,
+  color: '#0A0A0A',
+  marginBottom: '12px',
+  letterSpacing: '-0.02em',
+  lineHeight: 1.1,
+});
+
+const Subtitle = styled(Typography)({
+  fontSize: '18px',
+  color: '#6B7280',
+  fontWeight: 400,
+  lineHeight: 1.5,
+});
+
+const StatsGrid = styled(Box)({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+  gap: '24px',
+  marginBottom: '40px',
+  width: '100%',
+});
+
+const StatCard = styled(Box)({
+  backgroundColor: 'white',
+  border: '3px solid #E5E7EB',
+  borderRadius: '16px',
+  padding: '28px 24px',
+  transition: 'all 0.3s ease',
+  cursor: 'default',
   '&:hover': {
+    borderColor: '#1F2937',
+    transform: 'translateY(-2px)',
+    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+  },
+});
+
+const StatNumber = styled(Typography)({
+  fontSize: '36px',
+  fontWeight: 900,
+  color: '#0A0A0A',
+  marginBottom: '8px',
+  lineHeight: 1,
+});
+
+const StatLabel = styled(Typography)({
+  fontSize: '14px',
+  fontWeight: 600,
+  color: '#6B7280',
+  textTransform: 'uppercase',
+  letterSpacing: '0.05em',
+});
+
+const SearchBar = styled(Box)({
+  marginBottom: '32px',
+  display: 'flex',
+  gap: '16px',
+  alignItems: 'center',
+  width: '100%',
+});
+
+const SearchInput = styled(TextField)({
+  flex: 1,
+  '& .MuiOutlinedInput-root': {
+    backgroundColor: 'white',
+    borderRadius: '12px',
+    border: '2px solid #E5E7EB',
+    fontSize: '16px',
+    fontWeight: 500,
+    '& fieldset': {
+      border: 'none',
+    },
+    '&:hover': {
+      borderColor: '#D1D5DB',
+    },
+    '&.Mui-focused': {
+      borderColor: '#0A0A0A',
+      boxShadow: '0 0 0 4px rgba(10, 10, 10, 0.08)',
+    },
+  },
+  '& .MuiInputBase-input': {
+    padding: '18px 16px',
+    fontSize: '16px',
+    fontWeight: 500,
+    '&::placeholder': {
+      color: '#9CA3AF',
+      opacity: 1,
+    },
+  },
+});
+
+const FilterGroup = styled(Box)({
+  display: 'flex',
+  backgroundColor: 'white',
+  border: '2px solid #E5E7EB',
+  borderRadius: '12px',
+  overflow: 'hidden',
+});
+
+const FilterButton = styled(Box)<{ active?: boolean }>(({ active }) => ({
+  padding: '16px 20px',
+  fontSize: '14px',
+  fontWeight: 600,
+  cursor: 'pointer',
+  backgroundColor: active ? '#0A0A0A' : 'white',
+  color: active ? 'white' : '#6B7280',
+  borderRight: '1px solid #E5E7EB',
+  transition: 'all 0.2s ease',
+  '&:last-child': {
+    borderRight: 'none',
+  },
+  '&:hover': {
+    backgroundColor: active ? '#1F2937' : '#F9FAFB',
+  },
+}));
+
+const Grid = styled(Box)({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+  gap: '24px',
+  width: '100%',
+});
+
+const NewConsultationCard = styled(Box)({
+  backgroundColor: 'white',
+  border: '3px dashed #D1D5DB',
+  borderRadius: '20px',
+  padding: '48px 32px',
+  textAlign: 'center',
+  cursor: 'pointer',
+  transition: 'all 0.3s ease',
+  minHeight: '280px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  '&:hover': {
+    borderColor: '#0A0A0A',
+    borderStyle: 'solid',
+    backgroundColor: '#F9FAFB',
+    transform: 'translateY(-4px)',
+    boxShadow: '0 12px 32px rgba(0, 0, 0, 0.12)',
+  },
+});
+
+const ConsultationCard = styled(Box)({
+  backgroundColor: 'white',
+  border: '2px solid #E5E7EB',
+  borderRadius: '20px',
+  padding: '28px',
+  cursor: 'pointer',
+  transition: 'all 0.3s ease',
+  minHeight: '280px',
+  display: 'flex',
+  flexDirection: 'column',
+  position: 'relative',
+  '&:hover': {
+    borderColor: '#0A0A0A',
+    transform: 'translateY(-4px)',
+    boxShadow: '0 12px 32px rgba(0, 0, 0, 0.15)',
+  },
+});
+
+const CardHeader = styled(Box)({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  marginBottom: '20px',
+});
+
+const StatusBadge = styled(Box)<{ status?: string }>(({ status }) => {
+  const getStatusColor = () => {
+    switch (status) {
+      case 'completed': return '#10B981';
+      case 'active': return '#0A0A0A';
+      case 'pending': return '#F59E0B';
+      default: return '#9CA3AF';
+    }
+  };
+  
+  return {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px 12px',
+    backgroundColor: `${getStatusColor()}15`,
+    border: `2px solid ${getStatusColor()}`,
+    borderRadius: '8px',
+    fontSize: '12px',
+    fontWeight: 700,
+    color: getStatusColor(),
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+  };
+});
+
+const CardTitle = styled(Typography)({
+  fontSize: '20px',
+  fontWeight: 700,
+  color: '#0A0A0A',
+  marginBottom: '12px',
+  lineHeight: 1.3,
+});
+
+const CardDescription = styled(Typography)({
+  fontSize: '14px',
+  color: '#6B7280',
+  lineHeight: 1.5,
+  marginBottom: '24px',
+  flex: 1,
+  display: '-webkit-box',
+  WebkitLineClamp: 3,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+});
+
+const CardFooter = styled(Typography)({
+  fontSize: '12px',
+  color: '#9CA3AF',
+  fontWeight: 600,
+  textTransform: 'uppercase',
+  letterSpacing: '0.05em',
+  marginTop: 'auto',
+});
+
+const MenuButton = styled(IconButton)({
+  width: '36px',
+  height: '36px',
+  backgroundColor: '#F3F4F6',
+  border: '2px solid #E5E7EB',
+  borderRadius: '8px',
+  '&:hover': {
+    backgroundColor: '#E5E7EB',
     borderColor: '#D1D5DB',
   },
-}));
+});
 
-const ConsultationCard = styled(Card)(({ theme }) => ({
-  height: '100%',
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-  border: '1px solid #E5E7EB',
-  background: 'white',
-  boxShadow: 'none',
-  borderRadius: theme.spacing(1.5),
-  '&:hover': {
-    borderColor: '#1a1a1a',
-    transform: 'translateY(-2px)',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-  },
-}));
-
-const NewConsultationCard = styled(Card)(({ theme }) => ({
-  height: '100%',
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-  border: '2px dashed #D1D5DB',
-  background: '#FAFAFA',
-  boxShadow: 'none',
-  borderRadius: theme.spacing(1.5),
-  '&:hover': {
-    borderColor: '#1a1a1a',
-    background: '#F5F5F5',
-    transform: 'translateY(-2px)',
-  },
-}));
-
-const FilterButton = styled(Button)<{ active?: boolean }>(({ theme, active }) => ({
-  borderRadius: theme.spacing(1),
-  textTransform: 'none',
-  fontWeight: active ? 600 : 400,
-  color: active ? '#1a1a1a' : '#6B7280',
-  backgroundColor: active ? '#F3F4F6' : 'transparent',
-  border: 'none',
-  padding: theme.spacing(1, 2),
-  minWidth: 'auto',
-  '&:hover': {
-    backgroundColor: active ? '#E5E7EB' : '#F9FAFB',
-  },
-}));
+const EmptyState = styled(Box)({
+  gridColumn: '1 / -1',
+  textAlign: 'center',
+  padding: '80px 32px',
+  backgroundColor: 'white',
+  border: '2px solid #E5E7EB',
+  borderRadius: '20px',
+});
 
 const ConsultationHub: React.FC = () => {
   const navigate = useNavigate();
@@ -154,6 +348,7 @@ const ConsultationHub: React.FC = () => {
   };
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>, consultationId: string) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
     setSelectedConsultation(consultationId);
   };
@@ -161,19 +356,6 @@ const ConsultationHub: React.FC = () => {
   const handleMenuClose = () => {
     setAnchorEl(null);
     setSelectedConsultation(null);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return '#10B981';
-      case 'active':
-        return '#1a1a1a';
-      case 'pending':
-        return '#6B7280';
-      default:
-        return '#9CA3AF';
-    }
   };
 
   const filteredConsultations = consultations.filter(consultation => {
@@ -192,173 +374,69 @@ const ConsultationHub: React.FC = () => {
 
   if (!isAuthenticated) {
     return (
-      <Box sx={{ textAlign: 'center', py: 8 }}>
-        <Typography variant="h5" gutterBottom>
-          Please log in to access consultations
-        </Typography>
-        <Button variant="contained" onClick={() => navigate('/login')}>
-          Login
-        </Button>
-      </Box>
+      <Container>
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <Typography variant="h5" gutterBottom>
+            Please log in to access consultations
+          </Typography>
+        </Box>
+      </Container>
     );
   }
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-        <CircularProgress />
-      </Box>
+      <Container>
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <CircularProgress size={48} sx={{ color: '#0A0A0A' }} />
+        </Box>
+      </Container>
     );
   }
 
   if (error) {
     return (
-      <Alert severity="error" sx={{ mb: 3 }}>
-        {error}
-      </Alert>
+      <Container>
+        <Alert severity="error" sx={{ mb: 3, fontSize: '16px', fontWeight: 500 }}>
+          {error}
+        </Alert>
+      </Container>
     );
   }
 
   return (
-    <Box>
+    <Container>
       {/* Header */}
-      <Box sx={{ mb: 6 }}>
-        <Typography 
-          variant="h3" 
-          component="h1" 
-          gutterBottom 
-          sx={{ 
-            fontWeight: 700, 
-            color: '#1a1a1a',
-            fontSize: '2.5rem',
-            letterSpacing: '-0.02em'
-          }}
-        >
-          Consultation Hub
-        </Typography>
-        <Typography 
-          variant="body1" 
-          sx={{ 
-            color: '#6B7280', 
-            fontSize: '1.1rem',
-            fontWeight: 400
-          }}
-        >
+      <Header>
+        <Title>Consultation Hub</Title>
+        <Subtitle>
           Manage your compliance consultations and start new ones
-        </Typography>
-      </Box>
+        </Subtitle>
+      </Header>
 
-      {/* Statistics - Simplified */}
-              <Box sx={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-        gap: 2,
-        mb: 5 
-      }}>
-        <StatsCard>
-            <Typography 
-              variant="h4" 
-              sx={{ 
-                fontWeight: 700, 
-                color: '#1a1a1a',
-                mb: 0.5
-              }}
-            >
-                  {stats.total}
-                </Typography>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                color: '#9CA3AF',
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em'
-              }}
-            >
-              Total
-            </Typography>
-          </StatsCard>
+      {/* Statistics */}
+      <StatsGrid>
+        <StatCard>
+          <StatNumber>{stats.total}</StatNumber>
+          <StatLabel>Total</StatLabel>
+        </StatCard>
+        <StatCard>
+          <StatNumber>{stats.completed}</StatNumber>
+          <StatLabel>Completed</StatLabel>
+        </StatCard>
+        <StatCard>
+          <StatNumber>{stats.active}</StatNumber>
+          <StatLabel>Active</StatLabel>
+        </StatCard>
+        <StatCard>
+          <StatNumber>{stats.pending}</StatNumber>
+          <StatLabel>Pending</StatLabel>
+        </StatCard>
+      </StatsGrid>
 
-        <StatsCard>
-            <Typography 
-              variant="h4" 
-              sx={{ 
-                fontWeight: 700, 
-                color: '#1a1a1a',
-                mb: 0.5
-              }}
-            >
-              {stats.completed}
-            </Typography>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                color: '#9CA3AF',
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em'
-              }}
-            >
-              Completed
-                </Typography>
-          </StatsCard>
-
-          <StatsCard>
-            <Typography 
-              variant="h4" 
-              sx={{ 
-                fontWeight: 700, 
-                color: '#1a1a1a',
-                mb: 0.5
-              }}
-            >
-                  {stats.active}
-                </Typography>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                color: '#9CA3AF',
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em'
-              }}
-            >
-                  Active
-                </Typography>
-          </StatsCard>
-
-          <StatsCard>
-            <Typography 
-              variant="h4" 
-              sx={{ 
-                fontWeight: 700, 
-                color: '#1a1a1a',
-                mb: 0.5
-              }}
-            >
-                  {stats.pending}
-                </Typography>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                color: '#9CA3AF',
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em'
-              }}
-            >
-                  Pending
-                </Typography>
-          </StatsCard>
-      </Box>
-
-      {/* Search and Filter - Cleaner */}
-      <Box sx={{ mb: 4, display: 'flex', gap: 2, alignItems: 'center' }}>
-        <TextField
+      {/* Search and Filter */}
+      <SearchBar>
+        <SearchInput
           placeholder="Search consultations..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -368,22 +446,10 @@ const ConsultationHub: React.FC = () => {
                 <Search sx={{ color: '#9CA3AF', fontSize: 20 }} />
               </InputAdornment>
             ),
-            sx: {
-              '& fieldset': { border: '1px solid #E5E7EB' },
-              '&:hover fieldset': { borderColor: '#D1D5DB' },
-              '&.Mui-focused fieldset': { borderColor: '#1a1a1a', borderWidth: '1px' },
-            }
-          }}
-          sx={{ 
-            flex: 1,
-            '& .MuiInputBase-input': {
-              fontSize: '0.95rem',
-              fontWeight: 400,
-            }
           }}
         />
         
-        <Box sx={{ display: 'flex', gap: 1, bgcolor: '#F9FAFB', p: 0.5, borderRadius: 1 }}>
+        <FilterGroup>
           <FilterButton
             active={filterStatus === 'all'}
             onClick={() => setFilterStatus('all')}
@@ -400,208 +466,103 @@ const ConsultationHub: React.FC = () => {
             active={filterStatus === 'completed'}
             onClick={() => setFilterStatus('completed')}
           >
-                  Completed
+            Completed
           </FilterButton>
-              </Box>
-            </Box>
+          <FilterButton
+            active={filterStatus === 'pending'}
+            onClick={() => setFilterStatus('pending')}
+          >
+            Pending
+          </FilterButton>
+        </FilterGroup>
+      </SearchBar>
 
-      {/* Consultations Grid */}
-      <Box sx={{ 
-        display: 'grid', 
-        gridTemplateColumns: { 
-          xs: '1fr', 
-          sm: 'repeat(2, 1fr)', 
-          md: 'repeat(3, 1fr)' 
-        },
-        gap: 3 
-      }}>
-          {/* New Consultation Card */}
-            <NewConsultationCard>
-              <CardActionArea 
-              onClick={handleCreateNewConsultation}
-              sx={{ 
-                height: '240px', 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                p: 3
-              }}
-            >
-              <Add sx={{ fontSize: 32, color: '#6B7280', mb: 2 }} />
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  fontWeight: 600, 
-                  color: '#1a1a1a', 
-                  mb: 0.5,
-                  fontSize: '1.1rem'
-                }}
-              >
-                Start New Consultation
-                  </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{ 
-                  color: '#9CA3AF',
-                  fontSize: '0.875rem'
-                }}
-              >
-                Create a new compliance consultation
-                  </Typography>
-              </CardActionArea>
-            </NewConsultationCard>
+      {/* Grid */}
+      <Grid>
+        {/* New Consultation Card */}
+        <NewConsultationCard onClick={handleCreateNewConsultation}>
+          <Add sx={{ fontSize: 48, color: '#6B7280', marginBottom: '16px' }} />
+          <Typography sx={{ fontSize: '24px', fontWeight: 700, color: '#0A0A0A', mb: 1 }}>
+            Start New Consultation
+          </Typography>
+          <Typography sx={{ fontSize: '16px', color: '#6B7280' }}>
+            Create a new compliance consultation
+          </Typography>
+        </NewConsultationCard>
 
-          {/* Existing Consultations */}
+        {/* Existing Consultations */}
         {filteredConsultations.map((consultation) => (
-          <ConsultationCard key={consultation.id}>
-                <CardActionArea 
-                  onClick={() => handleViewConsultation(consultation.id)}
-                sx={{ height: '240px' }}
-                >
-                  <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-                  {/* Header */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <FiberManualRecord 
-                        sx={{ 
-                          fontSize: 10, 
-                          color: getStatusColor(consultation.status || 'pending') 
-                        }} 
-                      />
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
-                          color: '#6B7280',
-                          fontSize: '0.875rem',
-                          fontWeight: 500,
-                          textTransform: 'capitalize'
-                        }}
-                      >
-                        {consultation.status || 'pending'}
-                      </Typography>
-                      </Box>
-                      <IconButton
-                        size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleMenuClick(e, consultation.id);
-                      }}
-                      sx={{ 
-                        p: 0.5,
-                        '&:hover': { bgcolor: '#F3F4F6' }
-                      }}
-                    >
-                      <MoreVert sx={{ fontSize: 18 }} />
-                      </IconButton>
-                    </Box>
+          <ConsultationCard
+            key={consultation.id}
+            onClick={() => handleViewConsultation(consultation.id)}
+          >
+            <CardHeader>
+              <StatusBadge status={consultation.status || 'pending'}>
+                <FiberManualRecord sx={{ fontSize: 8 }} />
+                {consultation.status || 'pending'}
+              </StatusBadge>
+              <MenuButton onClick={(e) => handleMenuClick(e, consultation.id)}>
+                <MoreVert sx={{ fontSize: 18 }} />
+              </MenuButton>
+            </CardHeader>
 
-                  {/* Content */}
-                  <Box sx={{ flex: 1 }}>
-                    <Typography 
-                      variant="h6" 
-                      gutterBottom 
-                      sx={{ 
-                        fontWeight: 600, 
-                        color: '#1a1a1a',
-                        fontSize: '1.1rem',
-                        lineHeight: 1.4,
-                        mb: 1
-                      }}
-                    >
-                      {consultation.title || 'Untitled Consultation'}
-                    </Typography>
-                    
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        color: '#6B7280', 
-                        display: '-webkit-box', 
-                        WebkitLineClamp: 2, 
-                        WebkitBoxOrient: 'vertical', 
-                        overflow: 'hidden',
-                        fontSize: '0.9rem',
-                        lineHeight: 1.5
-                      }}
-                    >
-                      {consultation.description || 'No description available'}
-                    </Typography>
-                  </Box>
+            <CardTitle>
+              {consultation.title || 'Untitled Consultation'}
+            </CardTitle>
+            
+            <CardDescription>
+              {consultation.description || 'No description available'}
+            </CardDescription>
 
-                  {/* Footer */}
-                  <Typography 
-                    variant="caption" 
-                    sx={{ 
-                      color: '#9CA3AF',
-                      fontSize: '0.8rem',
-                      mt: 2
-                    }}
-                  >
-                    {new Date(consultation.created || new Date()).toLocaleDateString('en-US', { 
-                      month: 'short', 
-                      day: 'numeric', 
-                      year: 'numeric' 
-                    })}
-                        </Typography>
-                  </CardContent>
-                </CardActionArea>
-              </ConsultationCard>
-          ))}
+            <CardFooter>
+              Created {new Date(consultation.created || new Date()).toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+              })}
+            </CardFooter>
+          </ConsultationCard>
+        ))}
 
-          {/* Empty State */}
-        {filteredConsultations.length === 0 && !loading && (
-          <Box sx={{ gridColumn: '1 / -1' }}>
-            <Paper 
-              sx={{ 
-                p: 8, 
-                textAlign: 'center', 
-                border: '1px solid #E5E7EB',
-                borderRadius: 2,
-                boxShadow: 'none',
-                background: '#FAFAFA'
+        {/* Empty State */}
+        {filteredConsultations.length === 0 && (
+          <EmptyState>
+            <Assessment sx={{ fontSize: 64, color: '#D1D5DB', mb: 3 }} />
+            <Typography sx={{ fontSize: '28px', fontWeight: 700, color: '#0A0A0A', mb: 2 }}>
+              {searchQuery || filterStatus !== 'all' ? 'No consultations found' : 'No consultations yet'}
+            </Typography>
+            <Typography sx={{ fontSize: '16px', color: '#6B7280', mb: 4, maxWidth: 400, mx: 'auto' }}>
+              {searchQuery || filterStatus !== 'all' 
+                ? 'Try adjusting your search or filter criteria'
+                : 'Start your first compliance consultation to get expert guidance'
+              }
+            </Typography>
+            <Box
+              onClick={handleCreateNewConsultation}
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 1,
+                padding: '14px 24px',
+                backgroundColor: '#0A0A0A',
+                color: 'white',
+                borderRadius: '12px',
+                fontSize: '16px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  backgroundColor: '#1F2937',
+                  transform: 'translateY(-2px)',
+                },
               }}
             >
-              <Assessment sx={{ fontSize: 48, color: '#D1D5DB', mb: 3 }} />
-              <Typography 
-                variant="h5" 
-                gutterBottom 
-                sx={{ 
-                  fontWeight: 600, 
-                  color: '#1a1a1a',
-                  mb: 1
-                }}
-              >
-                {searchQuery || filterStatus !== 'all' ? 'No consultations found' : 'No consultations yet'}
-                </Typography>
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  color: '#6B7280', 
-                  mb: 4,
-                  fontSize: '0.95rem'
-                }}
-              >
-                {searchQuery || filterStatus !== 'all' 
-                  ? 'Try adjusting your search or filter criteria'
-                  : 'Start your first compliance consultation to get expert guidance'
-                }
-                </Typography>
-              <Button 
-                variant="contained" 
-                startIcon={<Add />}
-                onClick={handleCreateNewConsultation}
-                sx={{ 
-                  px: 4,
-                  bgcolor: '#1a1a1a',
-                  '&:hover': { bgcolor: '#333' }
-                }}
-              >
-                Start New Consultation
-              </Button>
-              </Paper>
-          </Box>
-          )}
-      </Box>
+              <Add sx={{ fontSize: 20 }} />
+              Start New Consultation
+            </Box>
+          </EmptyState>
+        )}
+      </Grid>
 
       {/* Action Menu */}
       <Menu
@@ -610,31 +571,44 @@ const ConsultationHub: React.FC = () => {
         onClose={handleMenuClose}
         PaperProps={{
           sx: {
-            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-            border: '1px solid #E5E7EB',
-            borderRadius: 1,
-            mt: 1
+            boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+            border: '2px solid #E5E7EB',
+            borderRadius: '12px',
+            mt: 1,
+            minWidth: 160,
           }
         }}
       >
         <MenuItem 
           onClick={() => {
             if (selectedConsultation) handleViewConsultation(selectedConsultation);
-          handleMenuClose();
+            handleMenuClose();
           }}
-          sx={{ fontSize: '0.9rem', color: '#1a1a1a' }}
+          sx={{ 
+            fontSize: '14px', 
+            fontWeight: 600, 
+            color: '#0A0A0A',
+            padding: '12px 16px',
+            '&:hover': { backgroundColor: '#F3F4F6' }
+          }}
         >
-          <Visibility sx={{ mr: 1.5, fontSize: 18 }} />
+          <Visibility sx={{ mr: 2, fontSize: 18 }} />
           View
         </MenuItem>
         <MenuItem 
           onClick={() => {
             if (selectedConsultation) handleEditConsultation(selectedConsultation);
-          handleMenuClose();
+            handleMenuClose();
           }}
-          sx={{ fontSize: '0.9rem', color: '#1a1a1a' }}
+          sx={{ 
+            fontSize: '14px', 
+            fontWeight: 600, 
+            color: '#0A0A0A',
+            padding: '12px 16px',
+            '&:hover': { backgroundColor: '#F3F4F6' }
+          }}
         >
-          <Edit sx={{ mr: 1.5, fontSize: 18 }} />
+          <Edit sx={{ mr: 2, fontSize: 18 }} />
           Edit
         </MenuItem>
         <MenuItem 
@@ -642,13 +616,19 @@ const ConsultationHub: React.FC = () => {
             if (selectedConsultation) handleDeleteConsultation(selectedConsultation);
             handleMenuClose();
           }}
-          sx={{ fontSize: '0.9rem', color: '#EF4444' }}
+          sx={{ 
+            fontSize: '14px', 
+            fontWeight: 600, 
+            color: '#EF4444',
+            padding: '12px 16px',
+            '&:hover': { backgroundColor: '#FEF2F2' }
+          }}
         >
-          <Delete sx={{ mr: 1.5, fontSize: 18 }} />
+          <Delete sx={{ mr: 2, fontSize: 18 }} />
           Delete
         </MenuItem>
       </Menu>
-    </Box>
+    </Container>
   );
 };
 

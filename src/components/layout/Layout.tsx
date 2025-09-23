@@ -31,14 +31,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           width: sidebarOpen ? 'calc(100% - 280px)' : '100%',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
           justifyContent: 'flex-start',
         }}
       >
 
         <Box sx={{ 
           width: '100%',
-          maxWidth: '1200px',
           px: { xs: 2, sm: 3, md: 4 }, 
           py: 4 
         }}>
