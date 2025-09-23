@@ -9,6 +9,9 @@ import {
   Box,
   Typography,
   IconButton,
+  Chip,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import {
   Hub,
@@ -16,9 +19,12 @@ import {
   Notifications,
   ChevronLeft,
   Menu,
+  CheckCircle,
+  Error,
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../pocketbase/services/AuthContext';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -71,6 +77,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, width = 280 }) => {
   const navigate = useNavigate();
   const [activeItem, setActiveItem] = React.useState('consultation-hub');
+  const { user, loading, error, isAuthenticated } = useAuth();
 
   const menuItems = [
            { 
@@ -166,6 +173,63 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, width = 280 }) 
             </ListItem>
           ))}
         </List>
+      </Box>
+      
+      {/* Auth Status Section */}
+      <Box sx={{ 
+        borderTop: '1px solid rgba(0,0,0,0.08)',
+        p: 2,
+        backgroundColor: '#f8f9fa'
+      }}>
+        {(() => {
+          if (loading) {
+            return (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CircularProgress size={16} />
+                <Typography variant="caption" color="text.secondary">
+                  Authenticating...
+                </Typography>
+              </Box>
+            );
+          }
+          
+          if (error) {
+            return (
+              <Alert severity="error" sx={{ fontSize: '0.75rem', py: 0.5 }}>
+                {error}
+              </Alert>
+            );
+          }
+          
+          if (isAuthenticated && user) {
+            return (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Chip
+                  icon={<CheckCircle />}
+                  label={`${user.email}`}
+                  color="success"
+                  variant="outlined"
+                  size="small"
+                  sx={{ fontSize: '0.75rem' }}
+                />
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                  ID: {user.id.substring(0, 8)}...
+                </Typography>
+              </Box>
+            );
+          }
+          
+          return (
+            <Chip
+              icon={<Error />}
+              label="Not authenticated"
+              color="error"
+              variant="outlined"
+              size="small"
+              sx={{ fontSize: '0.75rem' }}
+            />
+          );
+        })()}
       </Box>
     </Drawer>
     </>

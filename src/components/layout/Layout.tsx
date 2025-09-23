@@ -1,7 +1,6 @@
 // src/components/layout/Layout.tsx
 import React, { useState } from 'react';
-import { Box, Chip, CircularProgress, Alert } from '@mui/material';
-import { Person, CheckCircle, Error } from '@mui/icons-material';
+import { Box, CircularProgress } from '@mui/material';
 import { Header } from './Header';
 import Sidebar from './Sidebar';
 import { useAuth } from '../../pocketbase/services/AuthContext';
@@ -12,7 +11,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const { user, loading, error, isAuthenticated } = useAuth();
+  const { loading } = useAuth();
 
   const handleDrawerToggle = () => {
     setSidebarOpen(!sidebarOpen);
@@ -32,69 +31,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           width: sidebarOpen ? 'calc(100% - 280px)' : '100%',
           display: 'flex',
           flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
         }}
       >
-        {/* Auth Status Bar */}
-        <Box 
-          sx={{ 
-            px: 4, 
-            py: 2, 
-            backgroundColor: 'white', 
-            borderBottom: '1px solid rgba(0,0,0,0.08)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 2
-          }}
-        >
-          {loading ? (
-            <>
-              <CircularProgress size={20} />
-              <span>Authenticating...</span>
-            </>
-          ) : error ? (
-            <Alert severity="error" sx={{ flex: 1 }}>
-              {error}
-            </Alert>
-          ) : isAuthenticated && user ? (
-            <>
-              <Chip
-                icon={<CheckCircle />}
-                label={`Logged in as: ${user.email}`}
-                color="success"
-                variant="outlined"
-                size="small"
-              />
-              <Chip
-                icon={<Person />}
-                label={`User ID: ${user.id.substring(0, 8)}...`}
-                variant="outlined"
-                size="small"
-              />
-            </>
-          ) : (
-            <Chip
-              icon={<Error />}
-              label="Not authenticated"
-              color="error"
-              variant="outlined"
-              size="small"
-            />
-          )}
-        </Box>
 
         <Box sx={{ 
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
           width: '100%',
+          maxWidth: '1200px',
+          px: { xs: 2, sm: 3, md: 4 }, 
+          py: 4 
         }}>
-          <Box sx={{ 
-            maxWidth: '1200px', 
-            width: '100%',
-            px: { xs: 2, sm: 3, md: 4 }, 
-            py: 4 
-          }}>
           {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
               <CircularProgress />
@@ -102,7 +49,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           ) : (
             children
           )}
-          </Box>
         </Box>
       </Box>
     </Box>
