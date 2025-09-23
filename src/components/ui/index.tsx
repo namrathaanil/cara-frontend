@@ -1,12 +1,13 @@
-import React from 'react';
+
 import { styled } from '@mui/material/styles';
 import { Box, Button as MuiButton, Card as MuiCard, TextField as MuiTextField, Paper as MuiPaper } from '@mui/material';
 
 // Layout Components
+// Layout Components
 export const PageContainer = styled(Box)(({ theme }) => ({
-  maxWidth: '1200px',
-  margin: '0 auto',
-  padding: theme.spacing(4),
+    maxWidth: '1200px',
+    margin: '0 auto',
+    padding: theme.spacing(2, 4),
   animation: 'fadeIn 0.5s ease-in-out',
   '@keyframes fadeIn': {
     from: { opacity: 0, transform: 'translateY(10px)' },

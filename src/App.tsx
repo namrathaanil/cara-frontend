@@ -5,6 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { theme } from './styles/theme';
 import Layout from './components/layout/Layout';
 import Home from './components/home/Home';
+import ConsultationTypes from './components/consultation/ConsultationTypes';
 import NewConsultation from './components/consultation/NewConsultation';
 
 function App() {
@@ -15,7 +16,8 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/consultation/new" element={<NewConsultation />} />
+            <Route path="/consultation/new" element={<ConsultationTypes />} />
+            <Route path="/consultation/create" element={<NewConsultation />} />
           </Routes>
         </Layout>
       </Router>

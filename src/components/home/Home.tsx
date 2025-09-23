@@ -44,7 +44,7 @@ const Home: React.FC = () => {
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              Welcome to ComplianceAI
+              Welcome to CARA
             </Typography>
             <Typography 
               variant="body1" 

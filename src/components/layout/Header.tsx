@@ -13,6 +13,8 @@ export const Header: React.FC = () => {
         backdropFilter: 'blur(10px)',
         boxShadow: '0 1px 0 rgba(0,0,0,0.1)',
         borderBottom: '1px solid rgba(0,0,0,0.05)',
+        width: '100%',
+        zIndex: 1200,
       }}
     >
       <Toolbar sx={{ minHeight: 72 }}>
@@ -23,22 +25,16 @@ export const Header: React.FC = () => {
           onClick={() => navigate('/')}
         >
           <Box
+            component="img"
+            src="/reknew_logo.png"
+            alt="CARA Logo"
             sx={{
               width: 32,
               height: 32,
-              borderRadius: '8px',
-              background: 'linear-gradient(135deg, #1a1a1a 0%, #404040 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
               mr: 2,
-              color: 'white',
-              fontSize: '18px',
-              fontWeight: 700,
+              objectFit: 'contain',
             }}
-          >
-            C
-          </Box>
+          />
           <Typography
             variant="h6"
             sx={{ 
@@ -47,7 +43,7 @@ export const Header: React.FC = () => {
               letterSpacing: '-0.02em',
             }}
           >
-            ComplianceAI
+            CARA
           </Typography>
         </Box>
         <Box sx={{ flexGrow: 1 }} />
