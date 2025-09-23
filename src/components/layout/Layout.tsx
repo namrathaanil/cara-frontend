@@ -1,6 +1,6 @@
 // src/components/layout/Layout.tsx
 import React, { useState } from 'react';
-import { Container, Box, Chip, CircularProgress, Alert } from '@mui/material';
+import { Box, Chip, CircularProgress, Alert } from '@mui/material';
 import { Person, CheckCircle, Error } from '@mui/icons-material';
 import { Header } from './Header';
 import Sidebar from './Sidebar';
@@ -27,9 +27,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         sx={{ 
           flexGrow: 1,
           paddingTop: '72px',
-          transition: 'margin 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           marginLeft: sidebarOpen ? '280px' : 0,
           width: sidebarOpen ? 'calc(100% - 280px)' : '100%',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         {/* Auth Status Bar */}
@@ -80,7 +82,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           )}
         </Box>
 
-        <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Box sx={{ 
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: '100%',
+        }}>
+          <Box sx={{ 
+            maxWidth: '1200px', 
+            width: '100%',
+            px: { xs: 2, sm: 3, md: 4 }, 
+            py: 4 
+          }}>
           {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
               <CircularProgress />
@@ -88,7 +102,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           ) : (
             children
           )}
-        </Container>
+          </Box>
+        </Box>
       </Box>
     </Box>
   );

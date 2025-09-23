@@ -7,8 +7,7 @@ import { theme } from './styles/theme';
 import { AuthProvider } from './pocketbase/services/AuthContext';
 import Layout from './components/layout/Layout';
 import Home from './components/home/Home';
-import ConsultationTypes from './components/consultation/ConsultationTypes';
-import NewConsultation from './components/consultation/NewConsultation';
+import ConsultationHub from './components/consultation/ConsultationHub';
 
 function App() {
   return (
@@ -19,8 +18,7 @@ function App() {
           <Layout>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/consultation/new" element={<ConsultationTypes />} />
-              <Route path="/consultation/create" element={<NewConsultation />} />
+              <Route path="/consultation" element={<ConsultationHub />} />
             </Routes>
           </Layout>
         </Router>

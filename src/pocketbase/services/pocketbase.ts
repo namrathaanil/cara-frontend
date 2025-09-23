@@ -40,7 +40,7 @@ export const authService = {
         console.log('Test user not found, attempting to create...');
         try {
           // First create the user
-          const userData = await pb.collection('users').create({
+          await pb.collection('users').create({
             email: TEST_USER.email,
             password: TEST_USER.password,
             passwordConfirm: TEST_USER.password,
@@ -167,6 +167,16 @@ export const consultationService = {
       return consultation;
     } catch (error) {
       console.error('Failed to update consultation:', error);
+      throw error;
+    }
+  },
+
+  // Delete consultation
+  async deleteConsultation(id: string) {
+    try {
+      await pb.collection('consultations').delete(id);
+    } catch (error) {
+      console.error('Failed to delete consultation:', error);
       throw error;
     }
   },

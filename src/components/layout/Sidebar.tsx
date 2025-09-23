@@ -73,12 +73,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, width = 280 }) 
   const [activeItem, setActiveItem] = React.useState('consultation-hub');
 
   const menuItems = [
-    { 
-      icon: <Hub />, 
-      label: 'Consultation Hub', 
-      value: 'consultation-hub',
-      path: '/consultation/new'
-    },
+           { 
+             icon: <Hub />, 
+             label: 'Consultation Hub', 
+             value: 'consultation-hub',
+             path: '/consultation'
+           },
     { 
       icon: <School />, 
       label: 'Knowledge Base', 

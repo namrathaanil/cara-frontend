@@ -2,13 +2,13 @@ import React from 'react';
 import { Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, AutoAwesome } from '@mui/icons-material';
-import { PageContainer, GradientCard, CTACard, SecondaryButton, GhostButton, Section } from '../ui';
+import { GradientCard, CTACard, SecondaryButton, GhostButton, Section } from '../ui';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <PageContainer>
+    <Box>
       <Section>
         <GradientCard>
           <Box sx={{ position: 'relative', zIndex: 1 }}>
@@ -98,7 +98,7 @@ const Home: React.FC = () => {
           Launch Consultation
         </GhostButton>
       </CTACard>
-    </PageContainer>
+    </Box>
   );
 };
 
