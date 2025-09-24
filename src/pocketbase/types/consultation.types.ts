@@ -12,11 +12,11 @@ export interface BaseRecord extends RecordModel {
 
 // Consultation types
 export type ConsultationType = 'general' | 'risk-assessment' | 'compliance-review' | 'audit-preparation';
-export type ConsultationStatus = 'active' | 'completed';
+export type ConsultationStatus = 'active' | 'completed' | 'pending';
 
 // Main consultation interface
 export interface Consultation extends BaseRecord {
-  // Custom fields we added
+  // Custom fields we added - using 'topic' as the main field
   topic: string;
   description: string;
   type?: ConsultationType;

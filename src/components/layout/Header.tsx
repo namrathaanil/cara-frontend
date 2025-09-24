@@ -1,3 +1,4 @@
+// src/components/layout/Header.tsx
 import React from 'react';
 import { AppBar, Toolbar, Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -13,11 +14,11 @@ export const Header: React.FC = () => {
         backdropFilter: 'blur(10px)',
         boxShadow: '0 1px 0 rgba(0,0,0,0.1)',
         borderBottom: '1px solid rgba(0,0,0,0.05)',
-        width: '100%',
         zIndex: 1200,
       }}
     >
-      <Toolbar sx={{ minHeight: 72 }}>
+      <Toolbar sx={{ minHeight: 72, px: 3 }}>
+        {/* Logo and title */}
         <Box 
           display="flex" 
           alignItems="center" 
@@ -46,6 +47,7 @@ export const Header: React.FC = () => {
             CARA
           </Typography>
         </Box>
+
         <Box sx={{ flexGrow: 1 }} />
       </Toolbar>
     </AppBar>
