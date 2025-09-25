@@ -10,6 +10,8 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   Add,
@@ -25,100 +27,138 @@ import { styled } from '@mui/material/styles';
 import { consultationService } from '../../pocketbase/services/pocketbase';
 import { useAuth } from '../../pocketbase/services/AuthContext';
 import { Consultation } from '../../pocketbase/types/consultation.types';
+import ConsultationWizard from './ConsultationWizard';
 
-// Modern Custom Components with Consistent Styling
-const PageWrapper = styled(Box)({
+// Updated Custom Components for Better Responsiveness
+const PageWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
-  height: '100%',
-  padding: '40px',
-  '@media (max-width: 768px)': {
-    padding: '24px',
+  minHeight: 'calc(100vh - 72px)',
+  padding: theme.spacing(5),
+  [theme.breakpoints.down('md')]: {
+    padding: theme.spacing(3),
   },
-});
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(2),
+  },
+}));
 
-const Header = styled(Box)({
-  marginBottom: '48px',
-});
+const ContentContainer = styled(Box)(({ theme }) => ({
+  maxWidth: '1600px',
+  margin: '0 auto',
+  width: '100%',
+}));
 
-const Title = styled(Typography)({
+const Header = styled(Box)(({ theme }) => ({
+    marginBottom: theme.spacing(4),
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    [theme.breakpoints.down('md')]: {
+      marginBottom: theme.spacing(3),
+      flexDirection: 'column',
+      gap: theme.spacing(2),
+    },
+  }));
+  
+  const ActionButton = styled(Box)(({ theme }) => ({
+    padding: '14px 28px',
+    backgroundColor: '#0A0A0A',
+    color: 'white',
+    borderRadius: '12px',
+    fontSize: '15px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '10px',
+    transition: 'all 0.2s ease',
+    userSelect: 'none',
+    '&:hover': {
+      backgroundColor: '#1F2937',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+    },
+    [theme.breakpoints.down('sm')]: {
+      padding: '12px 20px',
+      fontSize: '14px',
+    },
+  }));
+
+const Title = styled(Typography)(({ theme }) => ({
   fontSize: '48px',
   fontWeight: 800,
   color: '#0A0A0A',
   marginBottom: '12px',
   letterSpacing: '-0.03em',
   lineHeight: 1.1,
-});
+  [theme.breakpoints.down('md')]: {
+    fontSize: '36px',
+  },
+  [theme.breakpoints.down('sm')]: {
+    fontSize: '28px',
+  },
+}));
 
-const Subtitle = styled(Typography)({
+const Subtitle = styled(Typography)(({ theme }) => ({
   fontSize: '18px',
   color: '#6B7280',
   fontWeight: 400,
   lineHeight: 1.5,
-});
-
-const StatsGrid = styled(Box)({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(4, 1fr)',
-  gap: '24px',
-  marginBottom: '48px',
-  width: '100%',
-  '@media (max-width: 1200px)': {
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: '16px',
+  [theme.breakpoints.down('sm')]: {
+    fontSize: '16px',
   },
-  '@media (max-width: 900px)': {
-    gridTemplateColumns: 'repeat(2, 1fr)',
-  },
-  '@media (max-width: 600px)': {
-    gridTemplateColumns: '1fr',
-  },
-});
+}));
 
-const StatCard = styled(Box)({
-  backgroundColor: 'white',
-  border: '2px solid #E5E7EB',
-  borderRadius: '16px',
-  padding: '32px',
-  transition: 'all 0.2s ease',
-  textAlign: 'center',
-  '&:hover': {
-    borderColor: '#9CA3AF',
-    transform: 'translateY(-2px)',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-  },
-});
+const SummaryBar = styled(Box)(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(3),
+    marginBottom: theme.spacing(4),
+    padding: theme.spacing(2, 0),
+    borderBottom: '1px solid #E5E7EB',
+    [theme.breakpoints.down('sm')]: {
+      flexWrap: 'wrap',
+      gap: theme.spacing(2),
+    },
+  }));
+  
+  const SummaryItem = styled(Box)({
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  });
+  
+  const SummaryDot = styled(Box)<{ color?: string }>(({ color = '#0A0A0A' }) => ({
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    backgroundColor: color,
+  }));
+  
+  const SummaryText = styled(Typography)({
+    fontSize: '14px',
+    color: '#6B7280',
+    fontWeight: 500,
+  });
 
-const StatNumber = styled(Typography)({
-  fontSize: '48px',
-  fontWeight: 800,
-  color: '#0A0A0A',
-  marginBottom: '8px',
-  lineHeight: 1,
-});
-
-const StatLabel = styled(Typography)({
-  fontSize: '12px',
-  fontWeight: 600,
-  color: '#9CA3AF',
-  textTransform: 'uppercase',
-  letterSpacing: '0.08em',
-});
-
-const ControlsSection = styled(Box)({
-  marginBottom: '32px',
+const ControlsSection = styled(Box)(({ theme }) => ({
+  marginBottom: theme.spacing(4),
   display: 'flex',
-  gap: '20px',
+  gap: theme.spacing(2.5),
   alignItems: 'center',
   width: '100%',
-  '@media (max-width: 768px)': {
+  [theme.breakpoints.down('md')]: {
     flexDirection: 'column',
-    gap: '16px',
+    gap: theme.spacing(2),
   },
-});
+}));
 
-const SearchInput = styled(TextField)({
+const SearchInput = styled(TextField)(({ theme }) => ({
   flex: 1,
   maxWidth: '600px',
+  [theme.breakpoints.down('md')]: {
+    maxWidth: '100%',
+  },
   '& .MuiOutlinedInput-root': {
     backgroundColor: 'white',
     borderRadius: '12px',
@@ -144,103 +184,112 @@ const SearchInput = styled(TextField)({
       opacity: 1,
     },
   },
-});
-
-const FilterGroup = styled(Box)({
-  display: 'flex',
-  backgroundColor: 'white',
-  border: '2px solid #E5E7EB',
-  borderRadius: '12px',
-  overflow: 'hidden',
-  flexShrink: 0,
-  height: '56px',
-  '@media (max-width: 768px)': {
-    width: '100%',
-  },
-});
-
-const FilterButton = styled(Box)<{ active?: boolean }>(({ active }) => ({
-  padding: '16px 24px',
-  fontSize: '15px',
-  fontWeight: 600,
-  cursor: 'pointer',
-  backgroundColor: active ? '#0A0A0A' : 'white',
-  color: active ? 'white' : '#6B7280',
-  borderRight: '1px solid #E5E7EB',
-  transition: 'all 0.2s ease',
-  userSelect: 'none',
-  height: '56px',
-  display: 'flex',
-  alignItems: 'center',
-  '&:last-child': {
-    borderRight: 'none',
-  },
-  '&:hover': {
-    backgroundColor: active ? '#1F2937' : '#F9FAFB',
-  },
 }));
 
-const CardsGrid = styled(Box)({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
-  gap: '24px',
-  width: '100%',
-  '@media (max-width: 1400px)': {
-    gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))',
-  },
-  '@media (max-width: 900px)': {
-    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-  },
-  '@media (max-width: 600px)': {
-    gridTemplateColumns: '1fr',
-  },
-});
+const FilterGroup = styled(Box)(({ theme }) => ({
+    display: 'flex',
+    gap: theme.spacing(1),
+    flexShrink: 0,
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+      overflowX: 'auto',
+      paddingBottom: theme.spacing(1),
+    },
+  }));
 
-const NewConsultationCard = styled(Box)({
-  backgroundColor: '#FAFAFA',
-  border: '3px dashed #D1D5DB',
-  borderRadius: '20px',
-  padding: '48px 32px',
-  textAlign: 'center',
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-  minHeight: '320px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  '&:hover': {
-    borderColor: '#9CA3AF',
+const FilterButton = styled(Box)<{ active?: boolean }>(({ active, theme }) => ({
+    padding: '10px 20px',
+    fontSize: '14px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    backgroundColor: active ? '#0A0A0A' : 'transparent',
+    color: active ? 'white' : '#6B7280',
+    border: active ? '2px solid #0A0A0A' : '2px solid #E5E7EB',
+    borderRadius: '100px',
+    transition: 'all 0.2s ease',
+    userSelect: 'none',
+    display: 'inline-flex',
+    alignItems: 'center',
+    whiteSpace: 'nowrap',
+    '&:hover': {
+      backgroundColor: active ? '#1F2937' : 'transparent',
+      borderColor: active ? '#1F2937' : '#9CA3AF',
+    },
+    [theme.breakpoints.down('sm')]: {
+      padding: '8px 16px',
+      fontSize: '13px',
+    },
+  }));
+
+  const ConsultationsList = styled(Box)({
+    width: '100%',
+  });
+
+
+
+  const ConsultationListItem = styled(Box)(({ theme }) => ({
     backgroundColor: 'white',
-    transform: 'scale(1.02)',
-    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)',
-  },
-});
+    border: '1px solid #E5E7EB',
+    borderRadius: '16px',
+    padding: theme.spacing(3, 4),
+    marginBottom: theme.spacing(2),
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    position: 'relative',
+    '&:hover': {
+      borderColor: '#0A0A0A',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+    },
+    '&:last-child': {
+      marginBottom: 0,
+    },
+    [theme.breakpoints.down('md')]: {
+      padding: theme.spacing(2.5, 3),
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      gap: theme.spacing(2),
+    },
+  }));
+  
+  const ConsultationContent = styled(Box)(({ theme }) => ({
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(3),
+    minWidth: 0, // Allows text truncation
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      gap: theme.spacing(1),
+    },
+  }));
+  
+  const ConsultationMeta = styled(Box)(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(2),
+    flexShrink: 0,
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+      justifyContent: 'space-between',
+    },
+  }));
 
-const ConsultationCard = styled(Box)({
-  backgroundColor: 'white',
-  border: '2px solid #E5E7EB',
-  borderRadius: '20px',
-  padding: '32px',
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-  minHeight: '320px',
-  display: 'flex',
-  flexDirection: 'column',
-  position: 'relative',
-  '&:hover': {
-    borderColor: '#9CA3AF',
-    transform: 'scale(1.02)',
-    boxShadow: '0 12px 32px rgba(0, 0, 0, 0.1)',
-  },
-});
-
-const CardHeader = styled(Box)({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'flex-start',
-  marginBottom: '16px',
-});
+  const ListItemTitle = styled(Typography)({
+    fontSize: '16px',
+    fontWeight: 600,
+    color: '#0A0A0A',
+    marginBottom: '4px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    minWidth: 0,
+  });
 
 const StatusBadge = styled(Box)<{ status?: string }>(({ status }) => {
   const getStatusStyles = () => {
@@ -285,38 +334,22 @@ const StatusBadge = styled(Box)<{ status?: string }>(({ status }) => {
   };
 });
 
-const CardTitle = styled(Typography)({
-  fontSize: '18px',
-  fontWeight: 600,
-  color: '#0A0A0A',
-  marginBottom: '8px',
-  lineHeight: 1.3,
-  display: '-webkit-box',
-  WebkitLineClamp: 2,
-  WebkitBoxOrient: 'vertical',
-  overflow: 'hidden',
-});
+const ListItemDescription = styled(Typography)({
+    fontSize: '14px',
+    color: '#6B7280',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    minWidth: 0,
+    maxWidth: '400px',
+  });
 
-const CardDescription = styled(Typography)({
-  fontSize: '14px',
-  color: '#6B7280',
-  lineHeight: 1.5,
-  marginBottom: '16px',
-  flex: 1,
-  display: '-webkit-box',
-  WebkitLineClamp: 3,
-  WebkitBoxOrient: 'vertical',
-  overflow: 'hidden',
-});
-
-const CardFooter = styled(Typography)({
-  fontSize: '12px',
-  color: '#9CA3AF',
-  fontWeight: 500,
-  marginTop: 'auto',
-  paddingTop: '12px',
-  borderTop: '1px solid #F3F4F6',
-});
+  const ListItemDate = styled(Typography)({
+    fontSize: '12px',
+    color: '#9CA3AF',
+    fontWeight: 500,
+    whiteSpace: 'nowrap',
+  });
 
 const MenuButton = styled(IconButton)({
   width: '32px',
@@ -329,7 +362,7 @@ const MenuButton = styled(IconButton)({
   },
 });
 
-const EmptyState = styled(Box)({
+const EmptyState = styled(Box)(({ theme }) => ({
   gridColumn: '1 / -1',
   textAlign: 'center',
   padding: '80px 32px',
@@ -341,9 +374,18 @@ const EmptyState = styled(Box)({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-});
+  [theme.breakpoints.down('md')]: {
+    padding: '60px 24px',
+    minHeight: '350px',
+  },
+  [theme.breakpoints.down('sm')]: {
+    padding: '40px 20px',
+    minHeight: '300px',
+  },
+}));
 
 const ConsultationHub: React.FC = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [consultations, setConsultations] = useState<Consultation[]>([]);
@@ -353,6 +395,11 @@ const ConsultationHub: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedConsultation, setSelectedConsultation] = useState<string | null>(null);
+  const [wizardOpen, setWizardOpen] = useState(false);
+
+  // Responsive checks
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -391,21 +438,26 @@ const ConsultationHub: React.FC = () => {
     }
   };
 
-  const handleCreateNewConsultation = async () => {
-    try {
-      const newConsultation = await consultationService.createConsultation({
-        topic: 'New Consultation',
-        description: 'A new compliance consultation',
-        type: 'risk-assessment',
-        status: 'pending',
-      });
-      
-      await loadConsultations();
-      navigate(`/consultation/${newConsultation.id}`);
-    } catch (err) {
-      console.error('Failed to create consultation:', err);
-      setError('Failed to create consultation. Please try again.');
-    }
+  const handleCreateNewConsultation = () => {
+    setWizardOpen(true);
+  };
+
+  const handleWizardClose = () => {
+    setWizardOpen(false);
+  };
+
+  const handleWizardSuccess = (consultationId: string) => {
+    console.log('=== WIZARD SUCCESS ===');
+    console.log('Consultation ID received:', consultationId);
+    
+    console.log('Closing wizard...');
+    setWizardOpen(false);
+    
+    console.log('Refreshing consultations list...');
+    loadConsultations();
+    
+    console.log('Navigating to chat...');
+    navigate(`/consultation/${consultationId}/chat`);
   };
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>, consultationId: string) => {
@@ -420,7 +472,6 @@ const ConsultationHub: React.FC = () => {
   };
 
   const filteredConsultations = consultations.filter(consultation => {
-    // Handle both 'topic' and 'title' fields for compatibility
     const title = consultation.topic || (consultation as any).title || '';
     const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          consultation.description?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -442,11 +493,13 @@ const ConsultationHub: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <PageWrapper>
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <Typography variant="h5" gutterBottom>
-            Please log in to access consultations
-          </Typography>
-        </Box>
+        <ContentContainer>
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <Typography variant="h5" gutterBottom>
+              Please log in to access consultations
+            </Typography>
+          </Box>
+        </ContentContainer>
       </PageWrapper>
     );
   }
@@ -454,9 +507,11 @@ const ConsultationHub: React.FC = () => {
   if (loading) {
     return (
       <PageWrapper>
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-          <CircularProgress size={48} sx={{ color: '#0A0A0A' }} />
-        </Box>
+        <ContentContainer>
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+            <CircularProgress size={48} sx={{ color: '#0A0A0A' }} />
+          </Box>
+        </ContentContainer>
       </PageWrapper>
     );
   }
@@ -464,242 +519,241 @@ const ConsultationHub: React.FC = () => {
   if (error) {
     return (
       <PageWrapper>
-        <Alert severity="error" sx={{ mb: 3, fontSize: '16px', fontWeight: 500 }}>
-          {error}
-        </Alert>
+        <ContentContainer>
+          <Alert severity="error" sx={{ mb: 3, fontSize: '16px', fontWeight: 500 }}>
+            {error}
+          </Alert>
+        </ContentContainer>
       </PageWrapper>
     );
   }
 
   return (
     <PageWrapper>
-      {/* Header */}
-      <Header>
-        <Title>Consultation Hub</Title>
-        <Subtitle>
-          Manage your compliance consultations and start new ones
-        </Subtitle>
-      </Header>
-
-      {/* Statistics */}
-      <StatsGrid>
-        <StatCard>
-          <StatNumber>{stats.total}</StatNumber>
-          <StatLabel>Total</StatLabel>
-        </StatCard>
-        <StatCard>
-          <StatNumber>{stats.completed}</StatNumber>
-          <StatLabel>Completed</StatLabel>
-        </StatCard>
-        <StatCard>
-          <StatNumber>{stats.active}</StatNumber>
-          <StatLabel>Active</StatLabel>
-        </StatCard>
-        <StatCard>
-          <StatNumber>{stats.pending}</StatNumber>
-          <StatLabel>Pending</StatLabel>
-        </StatCard>
-      </StatsGrid>
-
-      {/* Search and Filter */}
-      <ControlsSection>
-        <SearchInput
-          placeholder="Search consultations..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search sx={{ color: '#9CA3AF', fontSize: 24 }} />
-              </InputAdornment>
-            ),
-          }}
-        />
-        
-        <FilterGroup>
-          <FilterButton
-            active={filterStatus === 'all'}
-            onClick={() => setFilterStatus('all')}
-          >
-            All
-          </FilterButton>
-          <FilterButton
-            active={filterStatus === 'active'}
-            onClick={() => setFilterStatus('active')}
-          >
-            Active
-          </FilterButton>
-          <FilterButton
-            active={filterStatus === 'completed'}
-            onClick={() => setFilterStatus('completed')}
-          >
-            Completed
-          </FilterButton>
-          <FilterButton
-            active={filterStatus === 'pending'}
-            onClick={() => setFilterStatus('pending')}
-          >
-            Pending
-          </FilterButton>
-        </FilterGroup>
-      </ControlsSection>
-
-      {/* Cards Grid */}
-      <CardsGrid>
-        {/* New Consultation Card */}
-        <NewConsultationCard onClick={handleCreateNewConsultation}>
-          <Add sx={{ fontSize: 56, color: '#9CA3AF', marginBottom: '16px' }} />
-          <Typography sx={{ fontSize: '24px', fontWeight: 700, color: '#0A0A0A', mb: 1 }}>
+      <ContentContainer>
+        {/* Header */}
+        <Header>
+          <Box>
+            <Title>Your Consultations</Title>
+            <Subtitle>
+              Track and manage all your compliance consultations
+            </Subtitle>
+          </Box>
+          <ActionButton onClick={handleCreateNewConsultation}>
+            <Add sx={{ fontSize: 20 }} />
             Start New Consultation
-          </Typography>
-          <Typography sx={{ fontSize: '16px', color: '#6B7280', maxWidth: '280px' }}>
-            Create a new compliance consultation
-          </Typography>
-        </NewConsultationCard>
+          </ActionButton>
+        </Header>
 
-        {/* Existing Consultations */}
-        {filteredConsultations.map((consultation) => (
-          <ConsultationCard
-            key={consultation.id}
-            onClick={() => handleViewConsultation(consultation.id)}
+        {/* Summary Bar */}
+        <SummaryBar>
+          <SummaryItem>
+            <SummaryText sx={{ fontWeight: 600, color: '#0A0A0A' }}>
+              {stats.total} Total
+            </SummaryText>
+          </SummaryItem>
+          <SummaryItem>
+            <SummaryDot color="#0A0A0A" />
+            <SummaryText>{stats.active} Active</SummaryText>
+          </SummaryItem>
+          <SummaryItem>
+            <SummaryDot color="#10B981" />
+            <SummaryText>{stats.completed} Completed</SummaryText>
+          </SummaryItem>
+          <SummaryItem>
+            <SummaryDot color="#F59E0B" />
+            <SummaryText>{stats.pending} Pending</SummaryText>
+          </SummaryItem>
+        </SummaryBar>
+
+        {/* Search and Filter */}
+        <ControlsSection>
+          <SearchInput
+            placeholder="Search consultations..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            fullWidth={isTablet}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search sx={{ color: '#9CA3AF', fontSize: 24 }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+          
+          <FilterGroup>
+            <FilterButton
+              active={filterStatus === 'all'}
+              onClick={() => setFilterStatus('all')}
+            >
+              All
+            </FilterButton>
+            <FilterButton
+              active={filterStatus === 'active'}
+              onClick={() => setFilterStatus('active')}
+            >
+              Active
+            </FilterButton>
+            <FilterButton
+              active={filterStatus === 'completed'}
+              onClick={() => setFilterStatus('completed')}
+            >
+              Completed
+            </FilterButton>
+            <FilterButton
+              active={filterStatus === 'pending'}
+              onClick={() => setFilterStatus('pending')}
+            >
+              Pending
+            </FilterButton>
+          </FilterGroup>
+        </ControlsSection>
+
+        {/* Consultations List */}
+        <ConsultationsList>
+          {filteredConsultations.length === 0 ? (
+            <EmptyState>
+              <Assessment sx={{ 
+                fontSize: isMobile ? 56 : 72, 
+                color: '#D1D5DB', 
+                mb: 3 
+              }} />
+              <Typography sx={{ 
+                fontSize: isMobile ? '24px' : '28px', 
+                fontWeight: 700, 
+                color: '#0A0A0A', 
+                mb: 2 
+              }}>
+                {searchQuery || filterStatus !== 'all' ? 'No consultations found' : 'Ready to start?'}
+              </Typography>
+              <Typography sx={{ 
+                fontSize: isMobile ? '14px' : '16px', 
+                color: '#6B7280', 
+                mb: 4, 
+                maxWidth: 500, 
+                mx: 'auto' 
+              }}>
+                {searchQuery || filterStatus !== 'all' 
+                  ? 'Try adjusting your search or filter criteria'
+                  : 'Start your first compliance consultation to get expert guidance'
+                }
+              </Typography>
+            </EmptyState>
+          ) : (
+            filteredConsultations.map((consultation) => (
+              <ConsultationListItem
+                key={consultation.id}
+                onClick={() => handleViewConsultation(consultation.id)}
+              >
+                <ConsultationContent>
+                  <StatusBadge status={consultation.status || 'pending'}>
+                    <FiberManualRecord sx={{ fontSize: 8 }} />
+                    {consultation.status || 'pending'}
+                  </StatusBadge>
+                  
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <ListItemTitle>
+                      {consultation.topic || (consultation as any).title || 'Untitled Consultation'}
+                    </ListItemTitle>
+                    <ListItemDescription>
+                      {consultation.description || 'No description available'}
+                    </ListItemDescription>
+                  </Box>
+                </ConsultationContent>
+                
+                <ConsultationMeta>
+                  <ListItemDate>
+                    {new Date(consultation.created || new Date()).toLocaleDateString('en-US', { 
+                      month: 'short', 
+                      day: 'numeric', 
+                      year: 'numeric' 
+                    })}
+                  </ListItemDate>
+                  
+                  <MenuButton
+                    size="small"
+                    onClick={(e) => handleMenuClick(e, consultation.id)}
+                  >
+                    <MoreVert sx={{ fontSize: 16 }} />
+                  </MenuButton>
+                </ConsultationMeta>
+              </ConsultationListItem>
+            ))
+          )}
+        </ConsultationsList>
+
+        {/* Action Menu */}
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+          PaperProps={{
+            sx: {
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              border: '1px solid #E5E7EB',
+              borderRadius: '8px',
+              mt: 1,
+              minWidth: 140,
+            }
+          }}
+        >
+          <MenuItem 
+            onClick={() => {
+              if (selectedConsultation) handleViewConsultation(selectedConsultation);
+              handleMenuClose();
+            }}
+            sx={{ 
+              fontSize: '14px', 
+              fontWeight: 500, 
+              color: '#0A0A0A',
+              padding: '10px 14px',
+            }}
           >
-            <CardHeader>
-              <StatusBadge status={consultation.status || 'pending'}>
-                <FiberManualRecord sx={{ fontSize: 8 }} />
-                {consultation.status || 'pending'}
-              </StatusBadge>
-              <MenuButton
-                size="small"
-                onClick={(e) => handleMenuClick(e, consultation.id)}
-              >
-                <MoreVert sx={{ fontSize: 16 }} />
-              </MenuButton>
-            </CardHeader>
-
-            <CardTitle>
-              {consultation.topic || (consultation as any).title || 'Untitled Consultation'}
-            </CardTitle>
-            
-            <CardDescription>
-              {consultation.description || 'No description available'}
-            </CardDescription>
-
-            <CardFooter>
-              Created {new Date(consultation.created || new Date()).toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric', 
-                year: 'numeric' 
-              })}
-            </CardFooter>
-          </ConsultationCard>
-        ))}
-
-        {/* Empty State */}
-        {filteredConsultations.length === 0 && (
-          <EmptyState>
-            <Assessment sx={{ fontSize: 72, color: '#D1D5DB', mb: 3 }} />
-            <Typography sx={{ fontSize: '28px', fontWeight: 700, color: '#0A0A0A', mb: 2 }}>
-              {searchQuery || filterStatus !== 'all' ? 'No consultations found' : 'No consultations yet'}
-            </Typography>
-            <Typography sx={{ fontSize: '16px', color: '#6B7280', mb: 4, maxWidth: 500, mx: 'auto' }}>
-              {searchQuery || filterStatus !== 'all' 
-                ? 'Try adjusting your search or filter criteria'
-                : 'Start your first compliance consultation to get expert guidance'
-              }
-            </Typography>
-            {(searchQuery === '' && filterStatus === 'all') && (
-              <Box
-                onClick={handleCreateNewConsultation}
-                sx={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  padding: '16px 32px',
-                  backgroundColor: '#0A0A0A',
-                  color: 'white',
-                  borderRadius: '12px',
-                  fontSize: '16px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    backgroundColor: '#1F2937',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
-                  },
-                }}
-              >
-                <Add sx={{ fontSize: 20 }} />
-                Start New Consultation
-              </Box>
-            )}
-          </EmptyState>
-        )}
-      </CardsGrid>
-
-      {/* Action Menu */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        PaperProps={{
-          sx: {
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-            border: '1px solid #E5E7EB',
-            borderRadius: '8px',
-            mt: 1,
-            minWidth: 140,
-          }
-        }}
-      >
-        <MenuItem 
-          onClick={() => {
-            if (selectedConsultation) handleViewConsultation(selectedConsultation);
-            handleMenuClose();
-          }}
-          sx={{ 
-            fontSize: '14px', 
-            fontWeight: 500, 
-            color: '#0A0A0A',
-            padding: '10px 14px',
-          }}
-        >
-          <Visibility sx={{ mr: 1.5, fontSize: 18, color: '#6B7280' }} />
-          View
-        </MenuItem>
-        <MenuItem 
-          onClick={() => {
-            if (selectedConsultation) handleEditConsultation(selectedConsultation);
-            handleMenuClose();
-          }}
-          sx={{ 
-            fontSize: '14px', 
-            fontWeight: 500, 
-            color: '#0A0A0A',
-            padding: '10px 14px',
-          }}
-        >
-          <Edit sx={{ mr: 1.5, fontSize: 18, color: '#6B7280' }} />
-          Edit
-        </MenuItem>
-        <MenuItem 
-          onClick={() => {
-            if (selectedConsultation) handleDeleteConsultation(selectedConsultation);
-            handleMenuClose();
-          }}
-          sx={{ 
-            fontSize: '14px', 
-            fontWeight: 500, 
-            color: '#EF4444',
-            padding: '10px 14px',
-            '&:hover': { backgroundColor: '#FEF2F2' }
-          }}
-        >
-          <Delete sx={{ mr: 1.5, fontSize: 18 }} />
-          Delete
-        </MenuItem>
-      </Menu>
+            <Visibility sx={{ mr: 1.5, fontSize: 18, color: '#6B7280' }} />
+            View
+          </MenuItem>
+          <MenuItem 
+            onClick={() => {
+              if (selectedConsultation) handleEditConsultation(selectedConsultation);
+              handleMenuClose();
+            }}
+            sx={{ 
+              fontSize: '14px', 
+              fontWeight: 500, 
+              color: '#0A0A0A',
+              padding: '10px 14px',
+            }}
+          >
+            <Edit sx={{ mr: 1.5, fontSize: 18, color: '#6B7280' }} />
+            Edit
+          </MenuItem>
+          <MenuItem 
+            onClick={() => {
+              if (selectedConsultation) handleDeleteConsultation(selectedConsultation);
+              handleMenuClose();
+            }}
+            sx={{ 
+              fontSize: '14px', 
+              fontWeight: 500, 
+              color: '#EF4444',
+              padding: '10px 14px',
+              '&:hover': { backgroundColor: '#FEF2F2' }
+            }}
+          >
+            <Delete sx={{ mr: 1.5, fontSize: 18 }} />
+            Delete
+          </MenuItem>
+        </Menu>
+        {/* Consultation Wizard Modal */}
+        <ConsultationWizard
+          open={wizardOpen}
+          onClose={handleWizardClose}
+          onSuccess={handleWizardSuccess}
+        />
+      </ContentContainer>
     </PageWrapper>
+    
   );
 };
 

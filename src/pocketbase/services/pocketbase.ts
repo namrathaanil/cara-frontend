@@ -9,8 +9,8 @@ pb.autoCancellation(false);
 
 // Test user credentials - replace with your actual test user
 const TEST_USER = {
-  email: 'test@cara.com',
-  password: 'testpassword123'
+  email: 'admin@cara.com',
+  password: 'Test12345$'
 };
 
 // Authentication service
@@ -111,26 +111,54 @@ export const authService = {
 // Consultation service for CARA-specific operations
 export const consultationService = {
   // Create a new consultation
-  async createConsultation(data: {
-    topic: string;
-    description: string;
-    type?: string;
-    status?: string;
-    userId?: string;
-  }) {
-    try {
-      const consultation = await pb.collection('consultations').create({
-        ...data,
-        userId: data.userId || pb.authStore.model?.id,
-        status: data.status || 'pending',
-        createdAt: new Date().toISOString(),
-      });
-      return consultation;
-    } catch (error) {
-      console.error('Failed to create consultation:', error);
-      throw error;
-    }
-  },
+ // Create a new consultation
+ // Create a new consultation
+ async createConsultation(data: {
+  topic: string;
+  description: string;
+  type?: string;
+  status?: string;
+  userId?: string;
+}) {
+  try {
+    console.log('=== POCKETBASE CREATE ===');
+    console.log('Auth valid?', pb.authStore.isValid);
+    console.log('Current user:', pb.authStore.model?.email);
+    console.log('Input data:', data);
+    
+    // Map our type values to PocketBase allowed values
+    const mapTypeToAllowed = (type: string): string => {
+      if (type === 'risk' || type.includes('risk') || type.includes('assessment')) {
+        return 'risk-assessment';
+      }
+      if (type === 'comp' || type.includes('compliance')) {
+        return 'comp';
+      }
+      return 'general'; // default fallback
+    };
+    
+    const finalData = {
+      topic: data.topic,
+      description: data.description,
+      type: mapTypeToAllowed(data.type || 'general'),
+      status: 'active', // Only 'active' and 'completed' are allowed
+      userId: data.userId || pb.authStore.model?.id,
+    };
+    
+    console.log('Final data to send:', finalData);
+    
+    const consultation = await pb.collection('consultations').create(finalData);
+    
+    console.log('=== POCKETBASE SUCCESS ===');
+    console.log('Created consultation:', consultation);
+    
+    return consultation;
+  } catch (error) {
+    console.log('=== POCKETBASE ERROR ===');
+    console.error('PocketBase error details:', error);
+    throw error;
+  }
+},
 
   // Get user's consultations
   async getUserConsultations(userId?: string) {
